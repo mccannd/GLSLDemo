@@ -9,6 +9,68 @@
 #include <fstream>
 
 #define DEBUG true
+#define RES 1024
+
+
+float hashNoise(float x, float y) {
+
+	float n = sin(dot(glm::vec2(x, y), glm::vec2(12.9898f, 78.233f))) * 43758.5453f;
+	n = n - floor(n);
+	//return 0.5f + 0.5f * n;
+	return n;
+}
+
+float mix(float a, float b, float t) {
+	return (1.0f - t) * a + t * b;
+}
+
+float valueNoise(float x, float y) {
+	glm::vec2 f = glm::vec2(floor(x), floor(y));
+	glm::vec2 r = glm::vec2(x - f[0], y - f[1]);
+	glm::vec2 u = r*r*r*(r*(r*6.0f - glm::vec2(15.0f)) + glm::vec2(10.0f));
+
+	float a = hashNoise(f[0], f[1]);
+	float b = hashNoise(f[0] + 1.0f, f[1]);
+	float c = hashNoise(f[0], f[1] + 1.0f);
+	float d = hashNoise(f[0] + 1.0f, f[1] + 1.0f);
+
+	a = mix(a, b, u[0]);
+	c = mix(c, d, u[0]);
+
+	return mix(a, c, u[1]);
+}
+
+float fbm(float x, float y) {
+
+	float freq = 32.0f;
+	float ampl = 0.5f;
+	float n = 0;
+	for (int i = 0; i < 5; i++) {
+		n += ampl * valueNoise(freq * x, freq * y);
+		freq *= 1.98f;
+		ampl *= 0.49f;
+	}
+	return n;
+}
+
+// to be moved to a separate class soon
+
+GLuint* generateMap() {
+	GLuint * map = new GLuint[RES * RES];
+
+	for (int row = 0; row < RES; row++) {
+		for (int col = 0; col < RES; col++) {
+			GLuint color = (int)(255 * fbm((float) row / RES, (float) col / RES));
+			GLuint color1 = (int)(255 * fbm((float)row / RES + 1.0f, (float)col / RES + 1.0f));
+			GLuint color2 = (int)(255 * fbm((float)row / RES + 2.0f, (float)col / RES + 2.0f));
+			color = (color << 0) | (color1 << 8) | (color2 << 16) | (255 << 24);
+			map[row * RES + col] = color;
+		}
+	}
+
+	return map;
+}
+
 
 // GLSL parser and debug printer by Mariano Merchante
 std::string ReadFile(const std::string& filename)
@@ -166,6 +228,20 @@ int main() {
 	GLint resh = glGetUniformLocation(shaderProgram, "res_height");
 	glUniform1i(resh, pxHeight);
 
+	GLuint* noiseTexture = generateMap();
+	GLint imageAdd = glGetUniformLocation(shaderProgram, "texture0");
+	glUniform1i(imageAdd, 0);
+	glActiveTexture(GL_TEXTURE0 + 0);
+	glBindTexture(GL_TEXTURE_2D, imageAdd);
+
+		// set necessary texture parameters
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+	// allocate memory and set texture data
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, RES, RES, 0, GL_RGBA, GL_UNSIGNED_BYTE, noiseTexture);
 	sf::Clock clock = sf::Clock();
 
 	// run the main loop
@@ -190,6 +266,6 @@ int main() {
 		window.display();
 	}
 
-
+	delete[] noiseTexture;
 	return 0;
 }

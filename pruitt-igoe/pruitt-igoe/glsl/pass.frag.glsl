@@ -7,6 +7,8 @@ uniform vec3 u_cam_pos;
 uniform int res_width;
 uniform int res_height;
 
+uniform sampler2D texture0;
+
 in vec2 fuv;
 out vec4 out_Col;
 
@@ -55,6 +57,9 @@ float raySphere(in vec3 ro, in vec3 rd, in vec4 sph) {
 
 void main() {
     vec2 uv = 0.5 * fuv + vec2(0.5, 0.5);
+	float aspect = float(res_width) / float(res_height);
+	// for drawing a texture at its native resolution
+	vec2 texUV = vec2(float(res_width) / 1024.0, float(res_height) / 1024.0) * uv;
 
 	float st = sin(u_time);
 	float ct = cos(u_time);
@@ -65,7 +70,7 @@ void main() {
 	vec3 R = u_cam_proj[1];
 	vec3 U = u_cam_proj[2];
 
-	float aspect = float(res_width) / float(res_height);
+	
 
 	vec3 ref = u_cam_pos + 0.1 * F;
     float len = 0.1;
@@ -73,8 +78,12 @@ void main() {
 	
     vec3 rd = normalize(p - u_cam_pos);
     out_Col = vec4(rd, 1.0);
+	out_Col = texture2D(texture0, texUV);
+
 	//float t = sphereMarch(ro, rd);
 	float t = raySphere(ro, rd, vec4(0, 0, 0, 1));
+
+
 	if (t > 0.0) {
 
 		vec3 pos = ro + t * rd;
