@@ -188,6 +188,8 @@
     <None Include="glsl\flat.vert.glsl" />
     <None Include="glsl\minion.vert.glsl" />
     <None Include="glsl\minion.frag.glsl" />
+    <None Include="glsl\pass.frag.glsl" />
+    <None Include="glsl\pass.vert.glsl" />
     <None Include="glsl\pennFlag.frag.glsl" />
     <None Include="glsl\pennFlag.vert.glsl" />
     <None Include="glsl\shadingPass.frag.glsl" />

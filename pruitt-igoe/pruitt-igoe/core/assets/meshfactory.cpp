@@ -74,7 +74,8 @@ Mesh * MeshFactory::BuildUIQuad(bool writeOnly)
 	indices[index++] = 2;
 
 	indices[index++] = 2;
-	indices[index++] = 3;
+	indices[
+		index++] = 3;
 	indices[index++] = 0;
 
 	Mesh * output = new Mesh();

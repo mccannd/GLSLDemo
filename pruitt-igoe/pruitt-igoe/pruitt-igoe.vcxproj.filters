@@ -181,5 +181,7 @@
     <None Include="glsl\minion.frag.glsl" />
     <None Include="glsl\shadingPass.frag.glsl" />
     <None Include="glsl\shadingPass.vert.glsl" />
+    <None Include="glsl\pass.vert.glsl" />
+    <None Include="glsl\pass.frag.glsl" />
   </ItemGroup>
 </Project>
