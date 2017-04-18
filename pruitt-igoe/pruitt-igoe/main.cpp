@@ -2,6 +2,7 @@
 #include <SFML/OpenGL.hpp>
 #include <SFML/Graphics.hpp>
 #include <SFML/Window.hpp>
+#include <SFML/System/Clock.hpp>
 #include "core/log.h"
 #include <vector>
 #include <iostream>
@@ -45,10 +46,33 @@ void PrintShaderInfoLog(int shader)
 	}
 }
 
+
+void update(GLuint& shader, float time) {
+	GLint timeUniform = glGetUniformLocation(shader, "u_time");
+	glUniform1f(timeUniform, time);
+
+	glm::vec3 tgt = glm::vec3(0, 0, 0);
+	glm::vec3 pos = glm::vec3(1, 1, -2);
+	glm::vec3 F = glm::normalize(tgt - pos);
+	glm::vec3 R = glm::normalize(glm::cross(F, glm::vec3(0, 1, 0)));
+	glm::vec3 U = glm::normalize(glm::cross(R, F));
+
+	glm::mat3 FRU = glm::mat3(F, R, U);
+	GLint projUniform = glGetUniformLocation(shader, "u_cam_proj");
+	glUniformMatrix3fv(projUniform, 1, GL_FALSE, glm::value_ptr(FRU));
+	GLint camUniform = glGetUniformLocation(shader, "u_cam_pos");
+	glUniform3f(camUniform, pos[0], pos[1], pos[2]);
+
+	return;
+}
+
+
 int main() {
+	int pxWidth = 640;
+	int pxHeight = 480;
 
 	// create the window
-	sf::Window window(sf::VideoMode(640, 480, 32), "Spaceflight");
+	sf::Window window(sf::VideoMode(pxWidth, pxHeight, 32), "Spaceflight");
 	window.setVerticalSyncEnabled(true);
 
 	// activate the window
@@ -57,7 +81,6 @@ int main() {
 	// Load GLEW
 	GLenum err = glewInit();
 
-	// Show this before, just in case there's an error
 	std::cout << "--------------------------------------" << std::endl;
 	std::cout << "OpenGL version: " << glGetString(GL_VERSION) << std::endl;;
 	std::cout << "GLSL version: " << glGetString(GL_SHADING_LANGUAGE_VERSION) << std::endl;
@@ -138,6 +161,13 @@ int main() {
 	glVertexAttribPointer(posAttrib, 4, GL_FLOAT, GL_FALSE, 0, 0);
 	glEnableVertexAttribArray(posAttrib);
 
+	GLint resw = glGetUniformLocation(shaderProgram, "res_width");
+	glUniform1i(resw, pxWidth);
+	GLint resh = glGetUniformLocation(shaderProgram, "res_height");
+	glUniform1i(resh, pxHeight);
+
+	sf::Clock clock = sf::Clock();
+
 	// run the main loop
 	bool running = true;
 	while (running) {
@@ -150,6 +180,8 @@ int main() {
 				running = false;
 			}
 		}
+
+		update(shaderProgram, clock.getElapsedTime().asSeconds());
 
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		// raymarch me bro
