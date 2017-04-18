@@ -29,6 +29,7 @@ std::string ReadFile(const std::string& filename)
 	return "";
 }
 
+// GLSL parser and debug printer by Mariano Merchante
 void PrintShaderInfoLog(int shader)
 {
 	int infoLogLen = 0;
@@ -46,13 +47,12 @@ void PrintShaderInfoLog(int shader)
 	}
 }
 
-
 void update(GLuint& shader, float time) {
 	GLint timeUniform = glGetUniformLocation(shader, "u_time");
 	glUniform1f(timeUniform, time);
 
 	glm::vec3 tgt = glm::vec3(0, 0, 0);
-	glm::vec3 pos = glm::vec3(1, 1, -2);
+	glm::vec3 pos = glm::vec3(sin(0.5 * time), 1, cos(0.5 * time));
 	glm::vec3 F = glm::normalize(tgt - pos);
 	glm::vec3 R = glm::normalize(glm::cross(F, glm::vec3(0, 1, 0)));
 	glm::vec3 U = glm::normalize(glm::cross(R, F));
