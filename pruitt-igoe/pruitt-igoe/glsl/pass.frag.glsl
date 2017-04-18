@@ -12,6 +12,12 @@ uniform sampler2D texture0;
 in vec2 fuv;
 out vec4 out_Col;
 
+float rhythm(float time) {
+	float r = smoothstep(-1, 1, sin(6.263 * time));
+	r = smoothstep(0, 1, r);
+	return smoothstep(0, 1, r);;
+}
+
 float bias(in float t, in float b) {
 	return (t / ((((1.0 / b) - 2.0) * (1.0 - t)) + 1.0));
 }
@@ -26,8 +32,11 @@ float map(in vec3 pos) {
 	float s1 = texture2D(texture0, 0.5 * pos.xz + 0.5).x;
 	float s2 = texture2D(texture0, 0.5 * pos.zy + 0.5).y;
 	float s3 = texture2D(texture0, 0.5 * pos.xy + 0.5).z;
-	float bump = gain((s1 + s2 + s3) / 3.0, 0.33);
-	return length(pos) - 0.9 - 0.1 * bump;
+	float bump = bias(gain((s1 + s2 + s3) / 2.6, 0.33), 0.33);
+	float r = rhythm(u_time);
+	float height = clamp(r * bump,  0.4, 1.0);
+	return length(pos) - 0.9 - 0.1 * height;
+	//return max(length(pos) - 1.0, bump);
 }
 
 
@@ -70,10 +79,19 @@ float raySphere(in vec3 ro, in vec3 rd, in vec4 sph) {
 	return h;
 }
 
+
 void main() {
     vec2 uv = 0.5 * fuv + vec2(0.5, 0.5);
 	float aspect = float(res_width) / float(res_height);
 	// for drawing a texture at its native resolution
+
+	vec2 centerOffset = vec2(0.4 *  sin(0.75 * u_time), 0.4 *  cos(1.25 * u_time));
+
+	vec2 tuv = vec2(aspect, 1.0) * fuv + centerOffset;
+	float angle = 0.3183 * atan(abs(tuv.y), tuv.x);
+	angle = 0.5 * mod((tuv.y < 0 ? (2.0 - angle) : angle) + 0.25 * u_time, 2.0);
+	float dist = mod(length(tuv) + u_time, 1.0);
+
 	vec2 texUV = vec2(float(res_width) / 1024.0, float(res_height) / 1024.0) * uv;
 
 	float st = sin(u_time);
@@ -85,17 +103,15 @@ void main() {
 	vec3 R = u_cam_proj[1];
 	vec3 U = u_cam_proj[2];
 
-	
-
 	vec3 ref = u_cam_pos + 0.1 * F;
     float len = 0.1;
     vec3 p = ref + aspect * fuv.x * len * 1.619 * R + fuv.y * len * 1.619 * U;
 	
     vec3 rd = normalize(p - u_cam_pos);
-    out_Col = vec4(rd, 1.0);
-	vec4 sample = texture2D(texture0, texUV);
-	float sValue = gain((sample.x + sample.y + sample.z) / 3.0, 0.33);
-	out_Col = vec4(vec3(sValue), 1.0);
+
+
+    out_Col = texture2D(texture0, vec2(angle, dist)).xxxw;
+	//out_Col = vec4(angle, angle, angle, 1.0);
 
 	//float t = sphereMarch(ro, rd);
 	float t = raySphere(ro, rd, vec4(0, 0, 0, 1));
@@ -106,7 +122,7 @@ void main() {
 
 		vec3 pos = ro + t * rd;
 
-		float tM = rayMarch(pos, rd);
+		float tM = sphereMarch(pos, rd);
 
 		if (tM > 0.0) {
 			pos += tM * rd;

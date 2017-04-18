@@ -42,10 +42,10 @@ float valueNoise(float x, float y) {
 
 float fbm(float x, float y) {
 
-	float freq = 32.0f;
+	float freq = 16.0f;
 	float ampl = 0.5f;
 	float n = 0;
-	for (int i = 0; i < 5; i++) {
+	for (int i = 0; i < 7; i++) {
 		n += ampl * valueNoise(freq * x, freq * y);
 		freq *= 1.98f;
 		ampl *= 0.49f;
@@ -63,6 +63,7 @@ GLuint* generateMap() {
 			GLuint color = (int)(255 * fbm((float) row / RES, (float) col / RES));
 			GLuint color1 = (int)(255 * fbm((float)row / RES + 1.0f, (float)col / RES + 1.0f));
 			GLuint color2 = (int)(255 * fbm((float)row / RES + 2.0f, (float)col / RES + 2.0f));
+
 			color = (color << 0) | (color1 << 8) | (color2 << 16) | (255 << 24);
 			map[row * RES + col] = color;
 		}
