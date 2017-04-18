@@ -12,9 +12,24 @@ uniform sampler2D texture0;
 in vec2 fuv;
 out vec4 out_Col;
 
-float map(in vec3 pos) {
-	return length(pos) - 1.0;
+float bias(in float t, in float b) {
+	return (t / ((((1.0 / b) - 2.0) * (1.0 - t)) + 1.0));
 }
+
+float gain(in float t, in float g)
+{
+	if (t < 0.5) return bias(t * 2.0, g) / 2.0;
+	else return bias(t * 2.0 - 1.0, 1.0 - g) / 2.0 + 0.5;
+}
+
+float map(in vec3 pos) {
+	float s1 = texture2D(texture0, 0.5 * pos.xz + 0.5).x;
+	float s2 = texture2D(texture0, 0.5 * pos.zy + 0.5).y;
+	float s3 = texture2D(texture0, 0.5 * pos.xy + 0.5).z;
+	float bump = gain((s1 + s2 + s3) / 3.0, 0.33);
+	return length(pos) - 0.9 - 0.1 * bump;
+}
+
 
 vec3 getNormal(in vec3 pos) {
 	vec2 d = vec2(EPS, 0.0);
@@ -78,7 +93,9 @@ void main() {
 	
     vec3 rd = normalize(p - u_cam_pos);
     out_Col = vec4(rd, 1.0);
-	out_Col = texture2D(texture0, texUV);
+	vec4 sample = texture2D(texture0, texUV);
+	float sValue = gain((sample.x + sample.y + sample.z) / 3.0, 0.33);
+	out_Col = vec4(vec3(sValue), 1.0);
 
 	//float t = sphereMarch(ro, rd);
 	float t = raySphere(ro, rd, vec4(0, 0, 0, 1));
@@ -86,20 +103,29 @@ void main() {
 
 	if (t > 0.0) {
 
+
 		vec3 pos = ro + t * rd;
-		vec3 nor = getNormal(pos);
-		vec3 mat = vec3(0.2);
 
-		vec3 light_col = vec3(1.0, 0.8, 0.6);
-		vec3 light_amb = vec3(0.05, 0.1, 0.2) * (1.0 - abs(dot(nor, F)));
-		vec3 light_disp = vec3(10.0, 7.0, 10.0) - pos;
-		vec3 light_dir = normalize(light_disp);
-		float light_dist = length(light_disp);
+		float tM = rayMarch(pos, rd);
 
-		float facing = clamp(dot(light_dir, nor), 0.0, 1.0);
-		float intensity = 100.0 / (light_dist * light_dist);
-		vec3 col = intensity * facing * light_col + light_amb;
+		if (tM > 0.0) {
+			pos += tM * rd;
+			vec3 nor = getNormal(pos);
 
-		out_Col = vec4(pow(col, vec3(0.4545)), 1.0);
+			vec3 mat = vec3(0.2);
+
+			vec3 light_col = vec3(1.0, 0.8, 0.6);
+			vec3 light_amb = vec3(0.05, 0.1, 0.2) * (1.0 - abs(dot(nor, F)));
+			vec3 light_disp = vec3(10.0, 7.0, 10.0) - pos;
+			vec3 light_dir = normalize(light_disp);
+			float light_dist = length(light_disp);
+
+			float facing = clamp(dot(light_dir, nor), 0.0, 1.0);
+			float intensity = 100.0 / (light_dist * light_dist);
+			vec3 col = intensity * facing * light_col + light_amb;
+
+			out_Col = vec4(pow(col, vec3(0.4545)), 1.0);
+		}
+
 	}
 }
