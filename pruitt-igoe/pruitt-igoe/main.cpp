@@ -11,7 +11,6 @@
 #define DEBUG true
 #define RES 1024
 
-
 float hashNoise(float x, float y) {
 
 	float n = sin(dot(glm::vec2(x, y), glm::vec2(12.9898f, 78.233f))) * 43758.5453f;
@@ -121,7 +120,7 @@ void update(GLuint& shader, float time) {
 	glUniform1f(timeUniform, time);
 
 	glm::vec3 tgt = glm::vec3(0, 0, 0);
-	glm::vec3 pos = glm::vec3(sin(0.5 * time), 1, cos(0.5 * time));
+	glm::vec3 pos = glm::vec3(1.5 * sin(0.5 * time), -0.1f, 1.5 * cos(0.5 * time));
 	glm::vec3 F = glm::normalize(tgt - pos);
 	glm::vec3 R = glm::normalize(glm::cross(F, glm::vec3(0, 1, 0)));
 	glm::vec3 U = glm::normalize(glm::cross(R, F));
