@@ -18,144 +18,12 @@
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="core\material.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="core\assets\asset.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="core\assets\assetdatabase.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="core\assets\mesh.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="core\assets\meshfactory.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="core\assets\shader.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="core\assets\texture.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="core\component.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="core\engine.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="core\gameobject.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="core\log.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="core\transform.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="core\components\camera.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="core\components\renderer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="core\input.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="core\ui\uicomponent.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="core\ui\uiimage.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="core\ui\uitext.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="core\components\FPSCounter.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="demo\DemoCameraController.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="demo\DemoController.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="core\components\ShaderReloader.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="common.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="core\material.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="core\assets\asset.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="core\assets\assetdatabase.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="core\assets\mesh.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="core\assets\meshfactory.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="core\assets\shader.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="core\assets\texture.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="core\component.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="core\engine.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="core\gameobject.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="core\log.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="core\transform.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="core\components\camera.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="core\components\renderer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="core\input.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="core\ui\uicomponent.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="core\ui\uiimage.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="core\ui\uitext.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="core\components\FPSCounter.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="demo\DemoCameraController.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="demo\DemoController.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="core\engine_common.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="core\components\ShaderReloader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -171,16 +39,6 @@
     </Image>
   </ItemGroup>
   <ItemGroup>
-    <None Include="glsl\flat.frag.glsl" />
-    <None Include="glsl\flat.vert.glsl" />
-    <None Include="glsl\pennFlag.vert.glsl" />
-    <None Include="glsl\pennFlag.frag.glsl" />
-    <None Include="glsl\ui.frag.glsl" />
-    <None Include="glsl\ui.vert.glsl" />
-    <None Include="glsl\minion.vert.glsl" />
-    <None Include="glsl\minion.frag.glsl" />
-    <None Include="glsl\shadingPass.frag.glsl" />
-    <None Include="glsl\shadingPass.vert.glsl" />
     <None Include="glsl\pass.vert.glsl" />
     <None Include="glsl\pass.frag.glsl" />
   </ItemGroup>

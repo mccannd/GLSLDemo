@@ -128,55 +128,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="core\assets\asset.cpp" />
-    <ClCompile Include="core\assets\assetdatabase.cpp" />
-    <ClCompile Include="core\assets\mesh.cpp" />
-    <ClCompile Include="core\assets\meshfactory.cpp" />
-    <ClCompile Include="core\assets\shader.cpp" />
-    <ClCompile Include="core\assets\texture.cpp" />
-    <ClCompile Include="core\component.cpp" />
-    <ClCompile Include="core\components\camera.cpp" />
-    <ClCompile Include="core\components\renderer.cpp" />
-    <ClCompile Include="core\engine.cpp" />
-    <ClCompile Include="core\gameobject.cpp" />
-    <ClCompile Include="core\input.cpp" />
-    <ClCompile Include="core\log.cpp" />
-    <ClCompile Include="core\material.cpp" />
-    <ClCompile Include="core\transform.cpp" />
-    <ClCompile Include="core\ui\uicomponent.cpp" />
-    <ClCompile Include="core\ui\uiimage.cpp" />
-    <ClCompile Include="core\ui\uitext.cpp" />
-    <ClCompile Include="core\components\FPSCounter.cpp" />
-    <ClCompile Include="demo\DemoController.cpp" />
-    <ClCompile Include="demo\DemoCameraController.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="core\components\ShaderReloader.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="common.h" />
-    <ClInclude Include="core\assets\asset.h" />
-    <ClInclude Include="core\assets\assetdatabase.h" />
-    <ClInclude Include="core\assets\mesh.h" />
-    <ClInclude Include="core\assets\meshfactory.h" />
-    <ClInclude Include="core\assets\shader.h" />
-    <ClInclude Include="core\assets\texture.h" />
-    <ClInclude Include="core\component.h" />
-    <ClInclude Include="core\components\camera.h" />
-    <ClInclude Include="core\components\renderer.h" />
-    <ClInclude Include="core\engine.h" />
-    <ClInclude Include="core\gameobject.h" />
-    <ClInclude Include="core\engine_common.h" />
-    <ClInclude Include="core\input.h" />
     <ClInclude Include="core\log.h" />
-    <ClInclude Include="core\material.h" />
-    <ClInclude Include="core\transform.h" />
-    <ClInclude Include="core\ui\uicomponent.h" />
-    <ClInclude Include="core\ui\uiimage.h" />
-    <ClInclude Include="core\ui\uitext.h" />
-    <ClInclude Include="core\components\FPSCounter.h" />
-    <ClInclude Include="demo\DemoController.h" />
-    <ClInclude Include="demo\DemoCameraController.h" />
-    <ClInclude Include="core\components\ShaderReloader.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="resources\font.png" />
@@ -184,18 +140,8 @@
     <Image Include="test.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="glsl\flat.frag.glsl" />
-    <None Include="glsl\flat.vert.glsl" />
-    <None Include="glsl\minion.vert.glsl" />
-    <None Include="glsl\minion.frag.glsl" />
     <None Include="glsl\pass.frag.glsl" />
     <None Include="glsl\pass.vert.glsl" />
-    <None Include="glsl\pennFlag.frag.glsl" />
-    <None Include="glsl\pennFlag.vert.glsl" />
-    <None Include="glsl\shadingPass.frag.glsl" />
-    <None Include="glsl\shadingPass.vert.glsl" />
-    <None Include="glsl\ui.frag.glsl" />
-    <None Include="glsl\ui.vert.glsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

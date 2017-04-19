@@ -24,15 +24,21 @@ float mix(float a, float b, float t) {
 	return (1.0f - t) * a + t * b;
 }
 
-float valueNoise(float x, float y) {
+float valueNoise(float x, float y, float freq) {
+	x *= freq; y *= freq;
 	glm::vec2 f = glm::vec2(floor(x), floor(y));
 	glm::vec2 r = glm::vec2(x - f[0], y - f[1]);
 	glm::vec2 u = r*r*r*(r*(r*6.0f - glm::vec2(15.0f)) + glm::vec2(10.0f));
 
+	// force tiling boundaries
+	glm::vec2 f1 = glm::vec2(f) + glm::vec2(1, 1);
+	if (fabs(f1[0] - freq) < 0.001) f1[0] = 0.0;
+	if (fabs(f1[1] - freq) < 0.001) f1[1] = 0.0;
+
 	float a = hashNoise(f[0], f[1]);
-	float b = hashNoise(f[0] + 1.0f, f[1]);
-	float c = hashNoise(f[0], f[1] + 1.0f);
-	float d = hashNoise(f[0] + 1.0f, f[1] + 1.0f);
+	float b = hashNoise(f1[0], f[1]);
+	float c = hashNoise(f[0], f1[1]);
+	float d = hashNoise(f1[0], f1[1]);
 
 	a = mix(a, b, u[0]);
 	c = mix(c, d, u[0]);
@@ -46,9 +52,9 @@ float fbm(float x, float y) {
 	float ampl = 0.5f;
 	float n = 0;
 	for (int i = 0; i < 7; i++) {
-		n += ampl * valueNoise(freq * x, freq * y);
-		freq *= 1.98f;
-		ampl *= 0.49f;
+		n += ampl * valueNoise(x, y, freq);
+		freq *= 2.0f;
+		ampl *= 0.5f;
 	}
 	return n;
 }
@@ -73,7 +79,7 @@ GLuint* generateMap() {
 }
 
 
-// GLSL parser and debug printer by Mariano Merchante
+// GLSL parser by Mariano Merchante
 std::string ReadFile(const std::string& filename)
 {
 	std::ifstream in(filename, std::ios::in);
@@ -92,7 +98,7 @@ std::string ReadFile(const std::string& filename)
 	return "";
 }
 
-// GLSL parser and debug printer by Mariano Merchante
+// GLSL debug printer by Mariano Merchante
 void PrintShaderInfoLog(int shader)
 {
 	int infoLogLen = 0;
