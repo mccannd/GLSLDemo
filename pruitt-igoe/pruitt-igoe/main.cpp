@@ -118,9 +118,9 @@ void PrintShaderInfoLog(int shader)
 void update(GLuint& shader, float time) {
 	GLint timeUniform = glGetUniformLocation(shader, "u_time");
 	glUniform1f(timeUniform, time);
-
+	
 	glm::vec3 tgt = glm::vec3(0, 0, 0);
-	glm::vec3 pos = glm::vec3(1.5 * sin(0.5 * time), -0.1f, 1.5 * cos(0.5 * time));
+	glm::vec3 pos = glm::vec3(1.8 * sin(0.5 * time), -0.3f, 1.8 * cos(0.5 * time));
 	glm::vec3 F = glm::normalize(tgt - pos);
 	glm::vec3 R = glm::normalize(glm::cross(F, glm::vec3(0, 1, 0)));
 	glm::vec3 U = glm::normalize(glm::cross(R, F));
@@ -136,8 +136,8 @@ void update(GLuint& shader, float time) {
 
 
 int main() {
-	int pxWidth = 640;
-	int pxHeight = 480;
+	int pxWidth = 1024;// 640;
+	int pxHeight = 768;// 480;
 
 	// create the window
 	sf::Window window(sf::VideoMode(pxWidth, pxHeight, 32), "Spaceflight");

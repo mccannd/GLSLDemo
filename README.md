@@ -6,7 +6,8 @@
 
 - Every visual feature must be generated at runtime
 - Multiple cameras and shots (will have camera class)
-- More things to raytrace and march... probably cloud layers, or planet rings
+- Cloud / transparent elements
+- Buildings / architectural elements
 - Music, synchronization
 
 # Current checkpoint status
