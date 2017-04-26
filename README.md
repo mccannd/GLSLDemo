@@ -10,7 +10,15 @@
 - Buildings / architectural elements
 - Music, synchronization
 
-# Current checkpoint status
+# Checkpoint 2 Status
+
+- Tweaked and improved coloration of the tracer.
+- Simple planet deformation
+- Added volumetric clouds
+
+Need to implement the rest of the features for next time. Hoping for simple post-process. Need multiple textures in the shader. Very little time as of right now, but things open up after the last day of classes.
+
+# Checkpoint 1 Status
 
 - Currently a new version of my HW1 Planet
 - Made a good old-fashioned OpenGL project for the raymarcher

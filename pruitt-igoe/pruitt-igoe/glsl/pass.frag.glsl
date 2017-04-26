@@ -114,7 +114,6 @@ vec4 marchVolume(in vec3 ro, in vec3 rd, in float maxDist, in vec3 background) {
 	vec4 sum = vec4(0.5, 0.5, 0.5, 0.0);
 	vec3 sunPos = vec3(10.0, 7.0, 10.0);
 
-
 	float t = 0.0;
 	float st = sin(0.5 * u_time);
 	float ct = cos(0.5 * u_time);
@@ -123,11 +122,13 @@ vec4 marchVolume(in vec3 ro, in vec3 rd, in float maxDist, in vec3 background) {
 		vec3 pos = ro + t * rd;
 		vec3 p2 = vec3(ct * pos.x + st * pos.y, ct * pos.y - st*pos.x, pos.z) + vec3(1.0);
 
-
+		// cloud octaves
 		for (int j = 1; j < 3; j++) {
 			p2 *= 0.5;
 			float w = 0.5 * 1.0 / float(j);
-			vec3 pos2 = p2 - w * 0.16 * normalize(vec3(10.0, 7.0, 10.0) - p2);
+			vec3 pos2 = p2 - w * 0.10 * normalize(vec3(10.0, 7.0, 10.0) - p2);
+			
+			// light it more if less dense toward sun
 			float dense = getBump2(p2, w);
 			dense *= dense;
 			float dense2 = getBump2(pos2, w);
@@ -135,20 +136,15 @@ vec4 marchVolume(in vec3 ro, in vec3 rd, in float maxDist, in vec3 background) {
 			dense2 = clamp(1.67 * (dense - dense2), -0.7, 0.7);
 			vec3 col = vec3(dense2 * 0.5);
 
+			// weight opacity based on distance to some shell radius
 			float co = clamp(1.0 - 6.67 * abs(length(pos) - 0.85), 0.0, 1.0);
-			//float prad = getPlanetRadius(pos);
-			//co = clamp(prad - 10.0 * prad * abs(length(pos) - prad + 0.1 * prad), 0.0, 1.0);
 			co = smoothstep(0.0, 1.0, co);
-			//float op = dense > 0.5? co * 2.0 * (dense + 0.1): 0.0;
 			float op = pow(dense * co * 1.0, 2.5 - co);
 			op = clamp(op, 0.0, 1.0);
 			op = 2.0 * op * op;
 			sum.w += w*op;
 			sum.w = clamp(sum.w, 0.0, 1.0);
-			//col = mix(col, background, 1.0 - exp(-0.003*t*t));
-			sum.xyz = sum.xyz + (1.0 - sum.w)*op* col;
-
-			
+			sum.xyz = sum.xyz + (1.0 - sum.w)*op* col;	
 		}
 
 		if (sum.w > 0.99) break;
@@ -157,6 +153,7 @@ vec4 marchVolume(in vec3 ro, in vec3 rd, in float maxDist, in vec3 background) {
 		t += max(0.005, 0.02 * t);
 	}
 	vec3 mid = ro + (t * 0.5 + 0.05) * rd;
+	// light the cloud based on its orientation on the unit sphere
 	float alignment = dot(normalize(sunPos - mid), normalize(mid));
 	vec3 spherelit = mix(vec3(0.2, 0.3, 0.5), vec3(1.3, 1.2, 1.1), alignment * 0.5 + 0.5);
 	return vec4(spherelit * sum.xyz, sum.w);
@@ -233,8 +230,10 @@ void main() {
 
 			vec3 mat; 
 			
+			// color differently for water or terrain
 			float spec = abs(dot(normalize(light_dir - rd), nor));
 			if (rhythm * bump > 0.4) {
+				// terrain gradient mapping
 				mat = palette(rhythm * bump, vec3(0.298, 0.498, -0.102), vec3(0.268, 0.298, 0.798),
 					vec3(0.638, 0.508, 0.338), vec3(0.308, 1.308, 1.578));
 				spec *= 0.0001 * spec;
@@ -263,13 +262,10 @@ void main() {
 			out_Col = vec4(pow(col, vec3(0.4545)), 1.0);
 			
 		}
-		//out_Col.xyz = clamp(out_Col.xyz, vec3(0.0), vec3(1.0));
-		vec4 cloud = marchVolume(ro + t * rd, rd, tM > 0.0 ? tM : 2.0, out_Col.xyz);
 		
-		//out_Col = vec4(mix(out_Col.xyz, cloud.xyz, 0.5), 1.0);
+		vec4 cloud = marchVolume(ro + t * rd, rd, tM > 0.0 ? tM : 2.0, out_Col.xyz);
 		out_Col = vec4(mix(out_Col.xyz, clamp(cloud.xyz, vec3(0.0), vec3(1.0)), cloud.w), 1.0);
-		//out_Col = vec4(vec3(cloud.w), 1.0);
-		//out_Col.xyz += cloud.w * cloud.xyz;
+
 	}
 
 	// vignetting effect
