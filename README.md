@@ -1,6 +1,7 @@
 ## Final Project : Demo
 
-![](./demo2.PNG)
+![](./demo3.PNG)
+![](./demo4.PNG)
 
 # Planned features / goals for final
 
@@ -14,11 +15,14 @@
 
 - Tweaked and improved coloration of the tracer.
 - Simple planet deformation
+- Simple sunlight coloration
 - Added volumetric clouds
 
 Need to implement the rest of the features for next time. Hoping for simple post-process. Need multiple textures in the shader. Very little time as of right now, but things open up after the last day of classes.
 
 # Checkpoint 1 Status
+
+![](./demo2.PNG)
 
 - Currently a new version of my HW1 Planet
 - Made a good old-fashioned OpenGL project for the raymarcher
