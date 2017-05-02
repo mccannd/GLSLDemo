@@ -8,16 +8,23 @@ uniform int res_width;
 uniform int res_height;
 
 uniform sampler2D texture0;
+uniform sampler2D texture1;
 
 in vec2 fuv;
 out vec4 out_Col;
 
 float rhythm(float time) {
 	//return 1.0;
+	time *= 0.925;
 	float r = smoothstep(-1, 1, sin(6.263 * time));
 	r = smoothstep(0, 1, r);
-	return 0.8 + 0.2 * smoothstep(0, 1, r);
+	float mul = sin(12.566 * time) * 0.05 + sin(3.14 * time) * 0.1 + 0.85;
+	return mul * (0.8 + 0.2 * smoothstep(0, 1, r));
 	
+}
+
+float rNoise(in float x, in float y) {
+	return fract(sin(dot(vec2(x, y), vec2(12.9898, 78.233))) * 43758.5453);
 }
 
 float bias(in float t, in float b) {
@@ -30,6 +37,12 @@ float gain(in float t, in float g)
 	else return bias(t * 2.0 - 1.0, 1.0 - g) / 2.0 + 0.5;
 }
 
+vec3 angleAxis(in vec3 pt, in vec3 axis, in float theta) {
+	float ct = cos(theta);
+	float st = sin(theta);
+	return ct * pt + st * cross(pt, axis) + (1.0 - ct) * axis * dot(axis, pt);
+}
+
 float atan2(in float a, in float b) {
 	float angle = 0.3183 * atan(abs(b), a);
 	// correct for bad glsl arctangent
@@ -40,6 +53,7 @@ float atan2(in float a, in float b) {
 // Typical IQ Palette
 vec3 palette(in float t, in vec3 a, in vec3 b, in vec3 c, in vec3 d)
 {
+	t = clamp(t + 0.1, 0.0, 1.0);
 	return a + b*cos(6.28318*(c*t + d));
 }
 
@@ -62,17 +76,17 @@ float getBump2(in vec3 pos, in float w) {
 	return bias(gain((s1 + s2 + s3) / 2.6, 0.33), 0.33);
 }
 
-float getPlanetRadius(in vec3 pos) {
+float getPlanetRadius(in vec3 pos, in float r) {
 
-	float ech = sin(0.25 * 3.1416 * (u_time + 16.0 * pos.y)) * 0.2 + 0.3;
+	float ech = sin(0.25 * 3.1416 * (u_time + 16.0 * (pos.y + 0.2 * r))) * 0.2 + 0.3;
 	return 0.98 - ech;
 }
 
 float map(in vec3 pos) {
 	float bump = getBump(pos);
 	float r = rhythm(u_time);
-	float height = clamp(r * bump,  0.4, 1.0);
-	float r2 = getPlanetRadius(pos);
+	float height = clamp(r * bump,  0.35, 1.0);
+	float r2 = (0.2 * r + 0.8) * getPlanetRadius(pos, r);
 	return length(pos) - r2 - (0.98 - r2) * height + 0.05;
 }
 
@@ -109,18 +123,31 @@ float rayMarch(in vec3 ro, in vec3 rd) {
 	return -1.0;
 }
 
+vec3 vortex(in vec3 pos) {
+	float noise = 0.5 * getBump2(pos, 0.3) - 0.5;
+	vec3 axis = normalize(0.1 * vec3(-noise, noise, -noise) + vec3(0.5, 0.5, 0.5));
+
+	float l = length(pos - axis);
+	float t = max(0.6 - 2.0 * l, 0.0) * 12.566;
+	t += sign(t) * 0.3 * noise;
+	t += sign(t) * u_time;
+	return angleAxis(pos - vec3(1.0), axis, -t);
+}
+
 vec4 marchVolume(in vec3 ro, in vec3 rd, in float maxDist, in vec3 background) {
 	
 	vec4 sum = vec4(0.5, 0.5, 0.5, 0.0);
 	vec3 sunPos = vec3(10.0, 7.0, 10.0);
 
-	float t = 0.0;
 	float st = sin(0.5 * u_time);
 	float ct = cos(0.5 * u_time);
 
+	float t = 0.0;
+
 	for (int i = 1; i < 80; i++) {
 		vec3 pos = ro + t * rd;
-		vec3 p2 = vec3(ct * pos.x + st * pos.y, ct * pos.y - st*pos.x, pos.z) + vec3(1.0);
+		vec3 p2 = vec3(ct * pos.x + st * pos.z, pos.y, ct * pos.z - st*pos.x) +vec3(1.0);
+		p2 = vortex(p2);
 
 		// cloud octaves
 		for (int j = 1; j < 3; j++) {
@@ -139,7 +166,7 @@ vec4 marchVolume(in vec3 ro, in vec3 rd, in float maxDist, in vec3 background) {
 			// weight opacity based on distance to some shell radius
 			float co = clamp(1.0 - 6.67 * abs(length(pos) - 0.85), 0.0, 1.0);
 			co = smoothstep(0.0, 1.0, co);
-			float op = pow(dense * co * 1.0, 2.5 - co);
+			float op = pow(dense * co * 1.0, 2.4 - co);
 			op = clamp(op, 0.0, 1.0);
 			op = 2.0 * op * op;
 			sum.w += w*op;
@@ -170,8 +197,8 @@ float raySphere(in vec3 ro, in vec3 rd, in vec4 sph) {
 }
 
 
-void main() {
-    vec2 uv = 0.5 * fuv + vec2(0.5, 0.5);
+vec4 sampleBackground() {
+	vec2 uv = 0.5 * fuv + vec2(0.5, 0.5);
 	float aspect = float(res_width) / float(res_height);
 
 	// make tunnel effect
@@ -181,10 +208,47 @@ void main() {
 	float angle = 0.3183 * atan(abs(tuv.y), tuv.x);
 	// correct for bad glsl arctangent
 	angle = 0.5 * mod((tuv.y < 0 ? (2.0 - angle) : angle) + 0.25 * u_time, 2.0);
-	
+
 	float dist = mod(length(tuv) - 1.0 * u_time, 1.0);
 	vec3 d2 = vec3(clamp(length(tuv) - 0.2, 0.0, 1.0));
-	out_Col = pow(texture2D(texture0, vec2(angle, dist)).xxxw * d2.xxxz, vec4(3.0, 3.0, 3.0, 1.0));
+	return texture2D(texture1, vec2(angle, dist)).xyzw * d2.xxxz;
+
+}
+
+vec4 getBackground(in vec2 tuv) {
+
+	vec3 col = vec3(0.0);
+	float angle = 0.3183 * atan(abs(tuv.y), tuv.x);
+	float len = sqrt(length(tuv));
+	
+	float t = u_time;
+	float angle2 = 0.5 * mod((tuv.y < 0 ? (2.0 - angle) : angle) + 0.25 * t, 2.0);
+	
+	for (int samples = 0; samples < 16; samples++) {
+		
+		float dist = mod(len - 1.0 * t, 1.0);
+		float shutter = float(samples) / 8.0;
+		shutter -= floor(shutter);
+		shutter = min(1.0, 6.0 * abs(shutter - 0.5));
+		col = max(col, shutter * texture2D(texture1, vec2(angle2, dist)).xyz);
+		t -= 0.0025;		
+	}
+	
+	return vec4(col, 1.0);
+}
+
+void main() {
+    vec2 uv = 0.5 * fuv + vec2(0.5, 0.5);
+	float aspect = float(res_width) / float(res_height);
+
+	// make tunnel effect
+	vec2 centerOffset = vec2(0.2 *  sin(0.75 * u_time), 0.2 *  cos(1.25 * u_time));
+	vec2 tuv = vec2(aspect, 1.0) * fuv + centerOffset;
+	
+	vec3 d2 = vec3(clamp(length(tuv) - 0.2, 0.0, 1.0));
+	//out_Col = texture2D(texture1, vec2(angle, dist)).xyzw * d2.xxxz;
+	out_Col = getBackground(tuv) * d2.xxxz;
+
 
 	vec3 ro = u_cam_pos;
 	vec3 F = u_cam_proj[0];
@@ -232,7 +296,7 @@ void main() {
 			
 			// color differently for water or terrain
 			float spec = abs(dot(normalize(light_dir - rd), nor));
-			if (rhythm * bump > 0.4) {
+			if (rhythm * bump > 0.35) {
 				// terrain gradient mapping
 				mat = palette(rhythm * bump, vec3(0.298, 0.498, -0.102), vec3(0.268, 0.298, 0.798),
 					vec3(0.638, 0.508, 0.338), vec3(0.308, 1.308, 1.578));
@@ -268,7 +332,15 @@ void main() {
 
 	}
 
+	// white noise
+	float nz = rNoise(11.777 * fract(uv.x + 2.347 * u_time), -4.0973 * fract(uv.y + 1.979 * u_time));
+	float nz2 = rNoise(1.236 * fract(uv.x - 1.347 * u_time), -4.0973 * fract(uv.y + 4.458 * u_time));
+	nz *= nz2;
+
+	float nzt = u_time * 0.125;
+	nzt *= nzt * nzt;
+	out_Col.xyz = mix(out_Col.xyz, vec3(nz), max(0.05, 1.0 - nzt));
+
 	// vignetting effect
 	out_Col *= vec4(vec3(1.0 - clamp(length(0.75 * fuv) - 0.2, 0.0, 1.0)), 1.0);
-
 }

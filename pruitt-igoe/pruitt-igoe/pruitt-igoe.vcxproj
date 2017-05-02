@@ -129,11 +129,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="imgGenerator.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="common.h" />
     <ClInclude Include="core\log.h" />
+    <ClInclude Include="imgGenerator.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="resources\font.png" />

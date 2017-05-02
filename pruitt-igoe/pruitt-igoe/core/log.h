@@ -8,6 +8,7 @@
 #include <iostream>
 #include <mutex>
 
+
 class LogListener
 {
 public:
