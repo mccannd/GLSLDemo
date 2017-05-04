@@ -15,10 +15,10 @@ out vec4 out_Col;
 
 float rhythm(float time) {
 	//return 1.0;
-	time *= 0.925;
-	float r = smoothstep(-1, 1, sin(6.263 * time));
+	time *= 0.91916;
+	float r = smoothstep(-1, 1, sin(6.2831 * time));
 	r = smoothstep(0, 1, r);
-	float mul = sin(12.566 * time) * 0.05 + sin(3.14 * time) * 0.1 + 0.85;
+	float mul = sin(12.56638 * time) * 0.05 + sin(3.141596 * time) * 0.1 + 0.85;
 	return mul * (0.8 + 0.2 * smoothstep(0, 1, r));
 	
 }
@@ -249,6 +249,8 @@ void main() {
 	//out_Col = texture2D(texture1, vec2(angle, dist)).xyzw * d2.xxxz;
 	out_Col = getBackground(tuv) * d2.xxxz;
 
+	float rhythm = rhythm(u_time);
+	//out_Col.xyz = pow(out_Col.xyz, vec3(0.6 + 0.8 * rhythm));
 
 	vec3 ro = u_cam_pos;
 	vec3 F = u_cam_proj[0];
@@ -290,7 +292,7 @@ void main() {
 
 			float facing = clamp(dot(light_dir, nor), 0.0, 1.0);
 			float intensity = 200.0 / (light_dist * light_dist);
-			float rhythm = rhythm(u_time);
+			
 
 			vec3 mat; 
 			
@@ -332,12 +334,16 @@ void main() {
 
 	}
 
+	// lines
+	float lines = sin(res_height * 1.5708 * uv.y + 10.0 * u_time);
+	lines = 0.975 + 0.025 * lines;
+	out_Col.xyz *= lines;
+
 	// white noise
 	float nz = rNoise(11.777 * fract(uv.x + 2.347 * u_time), -4.0973 * fract(uv.y + 1.979 * u_time));
 	float nz2 = rNoise(1.236 * fract(uv.x - 1.347 * u_time), -4.0973 * fract(uv.y + 4.458 * u_time));
 	nz *= nz2;
-
-	float nzt = u_time * 0.125;
+	float nzt = u_time * 0.0625;
 	nzt *= nzt * nzt;
 	out_Col.xyz = mix(out_Col.xyz, vec3(nz), max(0.05, 1.0 - nzt));
 

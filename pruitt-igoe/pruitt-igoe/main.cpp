@@ -1,6 +1,7 @@
 
 #include "./imgGenerator.h"
 #include <SFML/Window.hpp>
+#include <SFML/Audio/Music.hpp>
 #include <SFML/System/Clock.hpp>
 #include "core/log.h"
 #include <vector>
@@ -193,7 +194,15 @@ int main() {
 	// allocate memory and set texture data
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, 1024, 1024, 0, GL_RGBA, GL_UNSIGNED_BYTE, noiseTexture2);
 	
-	
+	sf::Music song;
+	if (!song.openFromFile("Faunts - Das Malefitz.ogg"))
+	{
+		std::cout << "Failed to open song\n";
+	}
+	else {
+		song.setLoop(true);
+		song.play();
+	}
 	sf::Clock clock = sf::Clock();
 
 	// run the main loop
