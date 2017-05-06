@@ -1,8 +1,7 @@
 
 #include "./imgGenerator.h"
-#include <SFML/Window.hpp>
-#include <SFML/Audio/Music.hpp>
-#include <SFML/System/Clock.hpp>
+
+#include "common.h"
 #include "core/log.h"
 #include <vector>
 #include <iostream>
@@ -69,8 +68,8 @@ void update(GLuint& shader, float time) {
 
 
 int main() {
-	int pxWidth = 1024;// 640;
-	int pxHeight = 768;// 480;
+	int pxWidth = 1920;// 1024;// 640;
+	int pxHeight = 1080;// 768;// 480;
 
 	// create the window
 	sf::Window window(sf::VideoMode(pxWidth, pxHeight, 32), "Spaceflight");

@@ -14,13 +14,11 @@ in vec2 fuv;
 out vec4 out_Col;
 
 float rhythm(float time) {
-	//return 1.0;
 	time *= 0.91916;
 	float r = smoothstep(-1, 1, sin(6.2831 * time));
 	r = smoothstep(0, 1, r);
 	float mul = sin(12.56638 * time) * 0.05 + sin(3.141596 * time) * 0.1 + 0.85;
-	return mul * (0.8 + 0.2 * smoothstep(0, 1, r));
-	
+	return mul * (0.8 + 0.2 * smoothstep(0, 1, r));	
 }
 
 float rNoise(in float x, in float y) {
